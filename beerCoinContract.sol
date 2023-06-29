@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract BeerCoin is ERC20 {
 
     address barmen = 0xD8C7978Be2A06F5752cB727fB3B7831B70bF394d;
-    uint256 barmenFee = 50;
+    uint256 barmenFee = 50 * (10 ** decimals());
 
     constructor(uint256 initialSupply) ERC20("BeerCoin", "PNT") {
-        _mint(msg.sender, initialSupply);
+        _mint(msg.sender, initialSupply * (10 ** decimals()));
     }
 
     function transfer(address to, uint256 amount) public virtual override returns (bool) {
