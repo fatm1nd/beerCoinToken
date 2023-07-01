@@ -97,8 +97,10 @@
         
         <label for="recipientAddress">Recipient Address:</label>
         <input type="text" id="recipientAddress" placeholder="Enter the recipient's address">
-        
-        <button type="submit" id="transferButton" value="Transfer Tokens">Transfer Tokens</button>
+        <div id="statusContainer" style="transition:0.5s; border-width: 4px; ">
+            
+        </div>
+        <button type="submit" id="transferButton" value="Transfer Tokens" onclick="sendTokens()">Transfer Tokens</button>
         <table id="balancesTable">
             
         </table>
@@ -117,7 +119,7 @@
                 // console.log(err)
                 if (accounts.length == 0) console.log("User is not logged in to MetaMask");
                 else {
-                    console.log("User is logged in to MetaMask");
+                    // console.log("User is logged in to MetaMask");
                     document.getElementById("authbutton").style.background = "#4CAF50"
                     document.getElementById("authbutton").innerHTML = "Metamask connected"
                     window.ethereum.enable();
@@ -149,7 +151,7 @@
 
             if (input1.value && input2.value) {
                 button.disabled = false;
-                console.log(1)
+                // console.log(1)
             } else {
                 button.disabled = true;
             }
@@ -474,10 +476,59 @@
             ],"0xAe2b0D6628FB0CDD08084d97E784C0E8EeB618ab")
         }
 
+        // var privateKey;
+        // var currentAccount = await getCurrentAccount();
+        // web3.eth.getPrivateKey(currentAccount)
+        // .then(privateKeyi => {
+        //     console.log(privateKeyi);
+        //     privateKey = privateKey;
+        //     // Do something with the private key
+        // })
+        // .catch(error => {
+        //     console.error(error);
+        //     // Handle error retrieving the private key
+        // });
+
+        async function sendTokens(){
+            window.contract = await loadContract();
+            console.log(window.contract)
+            amount = Number(document.getElementById("tokenAmount").value);
+            address = document.getElementById("recipientAddress").value;
+            const account = await getCurrentAccount();
+            const decimals = await window.contract.methods.decimals().call();
+            // amount *= Number(Math.pow(10, Number(decimals)));
+            
+            console.log(amount);
+            //loading
+            document.getElementById("statusContainer").innerHTML = '<p>Transaction is processing...</p><img style="height: 30px; display: inline-block;" src="https://i.gifer.com/H0bj.gif">';
+            document.getElementById("statusContainer").style.border = "solid 5px #9b0000"
+            document.getElementById("statusContainer").style.borderRadius = "5px"
+            try {
+                const receipt = await window.contract.methods.transfer(address, amount).send({ from: account });
+                document.getElementById("statusContainer").innerHTML = '<p>Transaction is done!</p>';
+                document.getElementById("statusContainer").style.border = "solid 5px #4CAF50"
+                document.getElementById("statusContainer").style.borderRadius = "5px"
+            // Code to handle successful transaction
+            } catch (error) {
+            // Code to handle transaction denial or any other error
+                console.log('Error occurred:', error);
+                document.getElementById("statusContainer").innerHTML = '<p>Transaction is failed!</p>';
+                document.getElementById("statusContainer").style.border = "solid 5px #FFFFFF"
+                document.getElementById("statusContainer").style.borderRadius = "5px"
+            }
+            // console.log(coolNumber)
+            // Done 
+
+            
+
+            console.log('Transaction receipt:', receipt);
+            getBalances();
+        }
 
         async function getBalances(){
             window.contract = await loadContract();
-            console.log(window.contract)
+            const decimals = await window.contract.methods.decimals().call();
+            // console.log(window.contract)
             amount = Number(document.getElementById("tokenAmount").value);
             address = document.getElementById("recipientAddress").value;
             const account = await getCurrentAccount();
@@ -503,11 +554,12 @@
                 const amountCell = row.insertCell();
 
                 addressCell.innerHTML = result[0][i];
-                amountCell.innerHTML = result[1][i].toString();
+                amountCell.innerHTML = Number(result[1][i])/(Math.pow(10, Number(decimals)));
             }
         }
 
-        const inteer3 = setInterval(getBalances,500)
+        getBalances();
+        const inteer3 = setInterval(getBalances,60000)
 
 
         async function getCurrentAccount() {
