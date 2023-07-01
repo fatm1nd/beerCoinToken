@@ -1,167 +1,52 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>🍺BeerCoin Wallet🍺</title>
-    <style>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Web 3 Demo</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
 
-        html{
-            background-image: url("https://bgfons.com/uploads/beer/beer_texture1951.jpg");
-        }
-
-        *{
-            margin: 13px;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333333;
-        }
-        
-        form {
-            margin-top: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333333;
-        }
-        
-        input {
-            padding: 10px;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        input[id='recipientAddress']{
-            width: 300pt;
-        }
-        
-        button{
-            width: 95%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        button:hover {
-            background-color: #45a049;
-            margin: 13px;
-        }
-
-        button:disabled,
-        button[disabled]{
-            background-color: #cccccc;
-            color: #666666;
-            cursor: no-drop
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 
 </head>
-<body>
-    <div class="container">
-        <h1>🍺BeerCoin Wallet🍺</h1>
-        <button onclick="load()" style="background-color: #9b0000;" id="authbutton">Connect Metamask</button>
-        <label for="tokenAmount">PNT Amount:</label>
-        <span><input type="number" id="tokenAmount" id="tokenAmount" placeholder="Enter the number of PNTs">🍺 + Barmen fee (50 PNT)</span>
-        
-        <label for="recipientAddress">Recipient Address:</label>
-        <input type="text" id="recipientAddress" placeholder="Enter the recipient's address">
-        <div id="statusContainer" style="transition:0.5s; border-width: 4px; ">
-            
-        </div>
-        <div id="receipt">
 
-        </div>
-        <button type="submit" id="transferButton" value="Transfer Tokens" onclick="sendTokens()">Transfer Tokens</button>
-         
-        <table id="balancesTable">
-            
-        </table>
-    </div>
-    <script>
+<body>
+
+    Calculator Demo
+    <br >
+    <input placeholder="First Value" id="value1">
+    <input placeholder="Second Value" id="value2">
+    <button onclick="sum()">+</button>
+    <button onclick="subtract()">-</button>
+    <button onclick="multiple()">*</button>
+    <button onclick="divide()">/</button>
+
+
+    <br /><br />
+    Result: <span id="result">Loading...</span>
+
+    <script type="text/javascript">
         async function loadWeb3() {
             if (window.ethereum) {
                 window.web3 = new Web3(window.ethereum);
                 window.ethereum.enable();
             }
         }
-        window.web3 = new Web3(window.ethereum);
 
-        async function changeColourButton(){
-            var acc = window.web3.eth.getAccounts().then(function (accounts,err){
-                // console.log(err)
-                if (accounts.length == 0) console.log("User is not logged in to MetaMask");
-                else {
-                    // console.log("User is logged in to MetaMask");
-                    document.getElementById("authbutton").style.background = "#4CAF50"
-                    document.getElementById("authbutton").innerHTML = "Metamask connected"
-                    window.ethereum.enable();
-                }
-            });
-        }
-        
-        
         async function load() {
-            loadWeb3();
+            await loadWeb3();
             window.contract = await loadContract();
-            changeColourButton()
+            updateStatus('Ready!');
         }
 
-        async function checkAuth(){
-            console.log(web3.eth.getAccounts())
+        function updateStatus(status) {
+            const statusEl = document.getElementById('result');
+            statusEl.innerHTML = String(status);
+            console.log(status);
         }
 
-        changeColourButton();
-        
-        const inteer = setInterval(changeColourButton,500)
-
-
-        console.log(window.contract);
-        function checkInputs() {
-            const input1 = document.getElementById('tokenAmount');
-            const input2 = document.getElementById('recipientAddress');
-            const button = document.getElementById('transferButton');
-
-            if (input1.value && input2.value) {
-                button.disabled = false;
-                // console.log(1)
-            } else {
-                button.disabled = true;
-            }
-        }
-
-        const inteer2 = setInterval(checkInputs,500)
+        load();
 
         async function loadContract() {
             return await new window.web3.eth.Contract([
@@ -409,37 +294,6 @@
                 },
                 {
                     "inputs": [],
-                    "name": "getBalances",
-                    "outputs": [
-                        {
-                            "internalType": "address[]",
-                            "name": "",
-                            "type": "address[]"
-                        },
-                        {
-                            "internalType": "uint256[]",
-                            "name": "",
-                            "type": "uint256[]"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
-                    "name": "getUsers",
-                    "outputs": [
-                        {
-                            "internalType": "address[]",
-                            "name": "",
-                            "type": "address[]"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
                     "name": "name",
                     "outputs": [
                         {
@@ -477,110 +331,53 @@
                     "stateMutability": "view",
                     "type": "function"
                 }
-            ],"0xAe2b0D6628FB0CDD08084d97E784C0E8EeB618ab")
+            ],"0x35A460a6f8fB706822e41a4fD472711A18bC6136")
         }
 
-        // var privateKey;
-        // var currentAccount = await getCurrentAccount();
-        // web3.eth.getPrivateKey(currentAccount)
-        // .then(privateKeyi => {
-        //     console.log(privateKeyi);
-        //     privateKey = privateKey;
-        //     // Do something with the private key
-        // })
-        // .catch(error => {
-        //     console.error(error);
-        //     // Handle error retrieving the private key
-        // });
-
+        async function changeCoolNumber() {
+            const value = Math.floor(Math.random() * 100);
+            updateStatus(`Updating coolNumber with ${value}`);
+            const account = await getCurrentAccount();
+            const coolNumber = await window.contract.methods.setCoolNumber(value).send({ from: account });
+            console.log(coolNumber)
+            updateStatus('Updated.');
+        }
         
-
-        function disappear(){
-            document.getElementById("statusContainer").innerHTML = '';
-            document.getElementById("statusContainer").style.border = "solid 5px #FFFFFF"
-            document.getElementById("statusContainer").style.borderRadius = "5px"
-        }
-
-        async function sendTokens(){
-            window.contract = await loadContract();
-            console.log(window.contract)
-            amount = Number(document.getElementById("tokenAmount").value);
-            address = document.getElementById("recipientAddress").value;
+        async function sum(){
+            value1 = Number(document.getElementById("value1").value)
+            value2 = Number(document.getElementById("value2").value)
             const account = await getCurrentAccount();
-            const decimals = await window.contract.methods.decimals().call();
-            if (amount >= 0.001) {
-                amount *= (Math.pow(10, Number(decimals)));
-                amount = BigInt(amount)
-            }
-            else{
-                amount *= Math.pow(10, Number(decimals));
-            }
-            
-            console.log(amount);
-            //loading
-            var receipt;
-            document.getElementById("statusContainer").innerHTML = '<p>Transaction is processing...</p><img style="height: 30px; display: inline-block;" src="https://i.gifer.com/H0bj.gif">';
-            document.getElementById("statusContainer").style.border = "solid 5px #9b0000"
-            document.getElementById("statusContainer").style.borderRadius = "5px"
-            try {
-                receipt = await window.contract.methods.transfer(address, amount).send({ from: account });
-                document.getElementById("statusContainer").innerHTML = '<p>Transaction is done!</p>';
-                document.getElementById("statusContainer").style.border = "solid 5px #4CAF50"
-                document.getElementById("statusContainer").style.borderRadius = "5px"
-                getBalances();
-            // Code to handle successful transaction
-            } catch (error) {
-            // Code to handle transaction denial or any other error
-                console.log('Error occurred:', error);
-                document.getElementById("statusContainer").innerHTML = '<p>Transaction is failed!</p>';
-                document.getElementById("statusContainer").style.border = "solid 5px #000000"
-                document.getElementById("statusContainer").style.borderRadius = "5px"
-                timer = setTimeout(disappear,3000);
-                getBalances();
-            }
-            // console.log(coolNumber)
-            // Done   
-            console.log('Transaction receipt:', receipt);
-            document.getElementById("receipt").innerHTML = "<details><summary>Last receipt</summary>><p>From: "+ receipt.from +"</p><p>  To: "+ address +"</p><p>Used Gas: "+ receipt.cumulativeGasUsed +"</p><p>Transaction hash: "+ receipt.transactionHash+"</p><p>Block hash: "+ receipt.blockHash +"</p><p>Block number: "+ receipt.blockNumber +"</p</details>"
-            timer = setTimeout(disappear,3000);
-            getBalances();
+            const result = await window.contract.methods.add(value1,value2).call()
+            console.log(result)
+            updateStatus(result);
         }
 
-        async function getBalances(){
-            window.contract = await loadContract();
-            const decimals = await window.contract.methods.decimals().call();
-            // console.log(window.contract)
-            amount = Number(document.getElementById("tokenAmount").value);
-            address = document.getElementById("recipientAddress").value;
+        async function subtract(){
+            value1 = Number(document.getElementById("value1").value)
+            value2 = Number(document.getElementById("value2").value)
             const account = await getCurrentAccount();
-            const result = await window.contract.methods.getBalances().call();
-            // console.log(result);
-            const table = document.getElementById('balancesTable');
-            while (table.rows.length > 0) {
-                table.deleteRow(0);
-            }
-
-
-            // Create a new row for the headings
-            const headingRow = table.insertRow();
-            const userHeading = headingRow.insertCell();
-            const balanceHeading = headingRow.insertCell();
-
-            // Set the heading text
-            userHeading.innerHTML = "User";
-            balanceHeading.innerHTML = "Balance";
-            for (let i = 0; i < result[0].length; i++) {
-                const row = table.insertRow();
-                const addressCell = row.insertCell();
-                const amountCell = row.insertCell();
-
-                addressCell.innerHTML = result[0][i];
-                amountCell.innerHTML = Number(result[1][i])/(Math.pow(10, Number(decimals)));
-            }
+            const result = await window.contract.methods.subtract(value1,value2).call()
+            console.log(result)
+            updateStatus(result);
         }
 
-        getBalances();
-        const inteer3 = setInterval(getBalances,60000)
+        async function multiple(){
+            value1 = Number(document.getElementById("value1").value)
+            value2 = Number(document.getElementById("value2").value)
+            const account = await getCurrentAccount();
+            const result = await window.contract.methods.multiply(value1,value2).call()
+            console.log(result)
+            updateStatus(result);
+        }
+
+        async function divide(){
+            value1 = Number(document.getElementById("value1").value)
+            value2 = Number(document.getElementById("value2").value)
+            const account = await getCurrentAccount();
+            const result = await window.contract.methods.divide(value1,value2).call()
+            console.log(result)
+            updateStatus(result);
+        }
 
 
         async function getCurrentAccount() {
@@ -588,19 +385,7 @@
             return accounts[0];
         }
 
-        function insertValues() {
-            const table = document.getElementById('balancesTable');
-
-            for (let i = 0; i < addresses.length; i++) {
-                const row = table.insertRow();
-                const addressCell = row.insertCell();
-                const amountCell = row.insertCell();
-
-                addressCell.innerHTML = addresses[i];
-                amountCell.innerHTML = amounts[i].toString();
-            }
-        }
-
     </script>
 </body>
+
 </html>
