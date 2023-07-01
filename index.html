@@ -100,7 +100,11 @@
         <div id="statusContainer" style="transition:0.5s; border-width: 4px; ">
             
         </div>
+        <div id="receipt">
+
+        </div>
         <button type="submit" id="transferButton" value="Transfer Tokens" onclick="sendTokens()">Transfer Tokens</button>
+         
         <table id="balancesTable">
             
         </table>
@@ -489,6 +493,14 @@
         //     // Handle error retrieving the private key
         // });
 
+        
+
+        function disappear(){
+            document.getElementById("statusContainer").innerHTML = '';
+            document.getElementById("statusContainer").style.border = "solid 5px #FFFFFF"
+            document.getElementById("statusContainer").style.borderRadius = "5px"
+        }
+
         async function sendTokens(){
             window.contract = await loadContract();
             console.log(window.contract)
@@ -496,32 +508,40 @@
             address = document.getElementById("recipientAddress").value;
             const account = await getCurrentAccount();
             const decimals = await window.contract.methods.decimals().call();
-            // amount *= Number(Math.pow(10, Number(decimals)));
+            if (amount >= 0.001) {
+                amount *= (Math.pow(10, Number(decimals)));
+                amount = BigInt(amount)
+            }
+            else{
+                amount *= Math.pow(10, Number(decimals));
+            }
             
             console.log(amount);
             //loading
+            var receipt;
             document.getElementById("statusContainer").innerHTML = '<p>Transaction is processing...</p><img style="height: 30px; display: inline-block;" src="https://i.gifer.com/H0bj.gif">';
             document.getElementById("statusContainer").style.border = "solid 5px #9b0000"
             document.getElementById("statusContainer").style.borderRadius = "5px"
             try {
-                const receipt = await window.contract.methods.transfer(address, amount).send({ from: account });
+                receipt = await window.contract.methods.transfer(address, amount).send({ from: account });
                 document.getElementById("statusContainer").innerHTML = '<p>Transaction is done!</p>';
                 document.getElementById("statusContainer").style.border = "solid 5px #4CAF50"
                 document.getElementById("statusContainer").style.borderRadius = "5px"
+                getBalances();
             // Code to handle successful transaction
             } catch (error) {
             // Code to handle transaction denial or any other error
                 console.log('Error occurred:', error);
                 document.getElementById("statusContainer").innerHTML = '<p>Transaction is failed!</p>';
-                document.getElementById("statusContainer").style.border = "solid 5px #FFFFFF"
+                document.getElementById("statusContainer").style.border = "solid 5px #000000"
                 document.getElementById("statusContainer").style.borderRadius = "5px"
+                getBalances();
             }
             // console.log(coolNumber)
-            // Done 
-
-            
-
+            // Done   
             console.log('Transaction receipt:', receipt);
+            document.getElementById("receipt").innerHTML = "<details><summary>Last receipt</summary>><p>From: "+ receipt.from +"</p><p>  To: "+ address +"</p><p>Used Gas: "+ receipt.cumulativeGasUsed +"</p><p>Transaction hash: "+ receipt.transactionHash+"</p><p>Block hash: "+ receipt.blockHash +"</p><p>Block number: "+ receipt.blockNumber +"</p</details>"
+            timer = setTimeout(disappear,3000);
             getBalances();
         }
 
@@ -533,7 +553,7 @@
             address = document.getElementById("recipientAddress").value;
             const account = await getCurrentAccount();
             const result = await window.contract.methods.getBalances().call();
-            console.log(result);
+            // console.log(result);
             const table = document.getElementById('balancesTable');
             while (table.rows.length > 0) {
                 table.deleteRow(0);
