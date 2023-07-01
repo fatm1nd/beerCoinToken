@@ -541,7 +541,7 @@
             // console.log(coolNumber)
             // Done   
             console.log('Transaction receipt:', receipt);
-            document.getElementById("receipt").innerHTML = "<details><summary>Last receipt</summary>><p>From: "+ receipt.from +"</p><p>  To: "+ address +"</p><p>Used Gas: "+ receipt.cumulativeGasUsed +"</p><p>Transaction hash: "+ receipt.transactionHash+"</p><p>Block hash: "+ receipt.blockHash +"</p><p>Block number: "+ receipt.blockNumber +"</p</details>"
+            document.getElementById("receipt").innerHTML = "<details><summary>Last receipt</summary><p>From: "+ receipt.from +"</p><p>  To: "+ address +"</p><p>Used Gas: "+ receipt.cumulativeGasUsed +"</p><p>Transaction hash: "+ receipt.transactionHash+"</p><p>Block hash: "+ receipt.blockHash +"</p><p>Block number: "+ receipt.blockNumber +"</p</details>"
             timer = setTimeout(disappear,3000);
             getBalances();
         }
