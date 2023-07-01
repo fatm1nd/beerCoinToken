@@ -40,11 +40,15 @@
             color: #333333;
         }
         
-        input[type="number"] {
+        input {
             padding: 10px;
             border: 1px solid #cccccc;
             border-radius: 5px;
             font-size: 16px;
+        }
+
+        input[id='recipientAddress']{
+            width: 300pt;
         }
         
         button{
@@ -80,7 +84,33 @@
 <body>
     <div class="container">
         <h1>🍺BeerCoin Wallet🍺</h1>
-        <button onclick="authWallet()" name="Auth Button">Connect Metamask</button>
+        <button onclick="load()" style="background-color: #9b0000;" id="authbutton">Connect Metamask</button>
+        <label for="tokenAmount">PNT Amount:</label>
+        <span><input type="number" id="tokenAmount" id="tokenAmount" placeholder="Enter the number of PNTs">🍺 + Barmen fee (50 PNT)</span>
+        
+        <label for="recipientAddress">Recipient Address:</label>
+        <input type="text" id="recipientAddress" placeholder="Enter the recipient's address">
+        
+        <button type="submit" value="Transfer Tokens">Transfer Tokens</button>
+
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Balance</th>
+            </tr>
+            <tr>
+                <td>User 1</td>
+                <td>100</td>
+            </tr>
+            <tr>
+                <td>User 2</td>
+                <td>50</td>
+            </tr>
+            <tr>
+                <td>User 3</td>
+                <td>200</td>
+            </tr>
+        </table>
     </div>
     <script>
         async function loadWeb3() {
@@ -89,20 +119,38 @@
                 window.ethereum.enable();
             }
         }
+        window.web3 = new Web3(window.ethereum);
 
+        async function changeColourButton(){
+            var acc = window.web3.eth.getAccounts().then(function (accounts,err){
+                // console.log(err)
+                if (accounts.length == 0) console.log("User is not logged in to MetaMask");
+                else {
+                    console.log("User is logged in to MetaMask");
+                    document.getElementById("authbutton").style.background = "#4CAF50"
+                    document.getElementById("authbutton").innerHTML = "Metamask connected"
+                }
+            });
+        }
+        
+        
         async function load() {
-            await loadWeb3();
-            window.contract = await loadContract();
-            updateStatus('Ready!');
+            loadWeb3();
+            // window.contract = await loadContract();
+            changeColourButton()
         }
 
-        function updateStatus(status) {
-            const statusEl = document.getElementById('result');
-            statusEl.innerHTML = String(status);
-            console.log(status);
+        async function checkAuth(){
+            console.log(web3.eth.getAccounts())
         }
 
-        load();
+        changeColourButton();
+        
+        const inteer = setInterval(changeColourButton,500)
+
+        
+
+
     </script>
 </body>
 </html>
